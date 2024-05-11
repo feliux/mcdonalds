@@ -61,11 +61,27 @@ queues: RabbitMQ {
   orderUpdated.class: queue
 }
 
+legend: {
+  near: top-left
+  blue: gRPC {
+    shape: text
+    style.font-color: blue
+  }
+  red: HTTP {
+    shape: text
+    style.font-color: red
+  }
+  green: AMQP (direct) {
+    shape: text
+    style.font-color: green
+  }
+  orange: AMQP (fan-out) {
+    shape: text
+    style.font-color: orange
+  }
+}
+
 # Flows
-# http = red
-# grpc = blue (no color)
-# amqp (direct) = green
-# amqp (fanout) = orange
 browser <-> gateway: HTTP {style.stroke: red; style.animated: true}
 gateway <-> ordersService: gRPC sync {style.stroke: blue; style.animated: true}
 ordersService <-> menuService: 1. get the menu (mocked) {style.animated: true}

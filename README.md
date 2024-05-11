@@ -1,6 +1,6 @@
 # The Burguer Factory
 
-Note: This project uses multi-module workspaces, so each folder represents a microservice repository
+Note: This project uses multi-module workspaces, so each folder represents a microservice repository...
 
 e.g. Github
 
@@ -15,20 +15,9 @@ Go to [./docs/arch.png](./docs/arch.png)
 ## Installation
 
 ```bash
-# arch
-$ pacman -S nodejs npm
-
-# node
-$ npm install -D tailwindcss
-$ npm install -D daisyui@latest
-
 # go
-$ go install github.com/a-h/templ/cmd/templ@latest
 $ go install github.com/cosmtrek/air@latest
-
-# diagrams
 $ go install oss.terrastruct.com/d2@latest
-
 
 $ export PATH="$PATH:$(go env GOPATH)/bin"
 
