@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package api;
+
+import "order.proto";
+
+option go_package = "github.com/feliux/commons/api";
+
+service OrderService{
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+}

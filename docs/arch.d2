@@ -1,0 +1,93 @@
+# direction: right
+
+vars: {
+  d2-config: {
+    layout-engine: elk # dagree # tala
+    theme-id: 200
+    # dark-theme-id: 200
+    # pad: 0
+    center: true
+    sketch: true
+  }
+}
+
+title: {
+  label: The Burguer Factory
+  near: top-center
+  shape: text
+  style.font-size: 40
+  style.underline: true
+}
+
+classes: {
+  browser: {
+    icon: https://icons.terrastruct.com/tech%2Fbrowser-2.svg
+    shape: image
+  }
+  mongodb: {
+    icon: https://icons.terrastruct.com/dev%2Fmongodb.svg
+    shape: image
+  }
+  rabbitmq: {
+    icon: https://diagrams.mingrammer.com/img/resources/onprem/queue/rabbitmq.png
+    # shape: image
+  }
+  jaeger: {
+    icon: https://diagrams.mingrammer.com/img/resources/onprem/tracing/jaeger.png
+    shape: image
+  }
+  queue: {
+    shape: queue
+  }
+  engine: {
+    icon: https://icons.terrastruct.com/infra%2F021-hardware.svg
+    shape: image
+  }
+}
+
+# Definitions
+# Cloud: cloud {shape: cloud}
+# DB: db {shape: cylinder}
+browser: Browser {class: browser}
+orderDB: orderDB {class: mongodb}
+stockDB: stockDB {class: mongodb}
+paymentEngine: Payment Engine {class: engine}
+
+queues: RabbitMQ {
+  class: rabbitmq
+  style.stroke: orange
+  orderCreate.class: queue
+  orderPaid.class: queue
+  orderUpdated.class: queue
+}
+
+# Flows
+# http = red
+# grpc = blue (no color)
+# amqp (direct) = green
+# amqp (fanout) = orange
+browser <-> gateway: HTTP {style.stroke: red; style.animated: true}
+gateway <-> ordersService: gRPC sync {style.stroke: blue; style.animated: true}
+ordersService <-> menuService: 1. get the menu (mocked) {style.animated: true}
+ordersService <-> stockService: 2. validate stock {style.stroke: blue; style.animated: true}
+stockService <-> stockDB: 3. check quantity {style.stroke: red; style.animated: true}
+ordersService <-> orderDB: 4. register new order {style.stroke: red; style.animated: true}
+ordersService -> queues.orderCreate: 5. pub new order {style.stroke: green; style.animated: true}
+
+paymentService <- queues.orderCreate: 6. sub new order {style.stroke: green; style.animated: true}
+paymentService -> paymentEngine: {style.stroke: red; style.animated: true}
+paymentEngine -> paymentService: webhook {style.stroke: red; style.animated: true}
+paymentService -> queues.orderPaid: 7. pub payment ok {style.stroke: orange; style.animated:true}
+
+ordersService <- queues.orderPaid: 8.a.1 sub for update orderDB {style.stroke: orange; style.animated: true}
+ordersService <-> orderDB: 8.a.2 update payment {style.stroke: red; style.animated: true}
+
+stockService <- queues.orderPaid: 8.b.1 sub for update stockDB {style.stroke: orange; style.animated: true}
+stockService -> stockDB: 8.b.2 update stock {style.stroke: red; style.animated: true}
+
+kitchenService <- queues.orderPaid: 8.c sub for start cooking (long process) {style.stroke: orange; style.animated: true}
+
+kitchenService -> browser: 9. notify user for picking up {style.stroke: red; style.animated: true}
+kitchenService -> ordersService: 10. close order {style.stroke: blue; style.animated: true}
+
+ordersService <-> orderDB: 11. close order in orderDB {style.stroke: red; style.animated: true}
