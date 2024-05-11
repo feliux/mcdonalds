@@ -6,7 +6,6 @@ import (
 	"net"
 
 	"github.com/feliux/commons"
-	pb "github.com/feliux/commons/api"
 	"google.golang.org/grpc"
 )
 
@@ -30,8 +29,8 @@ func main() {
 	// Business layer
 	svc := NewService(store)
 	svc.CreateOrder(context.Background())
-	// NewGRPCHandler(grpcServer)
-	pb.RegisterOrderServiceServer(grpcServer, &Server{})
+	NewGRPCHandler(grpcServer, svc)
+	// pb.RegisterOrderServiceServer(grpcServer, &Server{})
 	log.Printf("Listening at %s\n", grpcOrdersAddr)
 	if err := grpcServer.Serve(l); err != nil {
 		log.Fatalf("Failed to start gRPC server: %v\n", err)
